@@ -1,5 +1,7 @@
 
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /*
@@ -27,6 +30,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class Interfejs extends JFrame implements ActionListener{
     
+    private BufferedImage obraz = null;
+    private DrawPanel panel = null;
+    
     public Interfejs()
     {
         initUI();
@@ -34,12 +40,12 @@ public class Interfejs extends JFrame implements ActionListener{
     
     private void initUI()
     {
+        panel = new DrawPanel(obraz);
         createMenuBar();
-        
         setTitle("Aplikacja");
+        this.add(panel);
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
     }
     
     private void createMenuBar() {
@@ -62,8 +68,10 @@ public class Interfejs extends JFrame implements ActionListener{
         pMenuItem.setToolTipText("Read picture");
         pMenuItem.addActionListener((ActionEvent event) -> {
             readPicture();
+            panel.drawPicture(obraz);
         });
         file.add(pMenuItem);
+        //Add menu bar
         menubar.add(file);
         
         setJMenuBar(menubar);
@@ -71,7 +79,7 @@ public class Interfejs extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        panel.drawPicture(obraz);
     }
     
     private void readPicture(){
@@ -80,13 +88,12 @@ public class Interfejs extends JFrame implements ActionListener{
         FileNameExtensionFilter filter = new FileNameExtensionFilter("JPEG", "jpeg", "jpg", "png", "bmp", "gif");
         fc.addChoosableFileFilter(filter);
 
-        BufferedImage origImage = null;
         // You should use the parent component instead of null
         // but it was impossible to tell from the code snippet what that was.
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fc.getSelectedFile();
             try {
-                origImage = ImageIO.read(selectedFile);
+                obraz = ImageIO.read(selectedFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -95,7 +102,8 @@ public class Interfejs extends JFrame implements ActionListener{
     
     public static void main(String[] args){
         EventQueue.invokeLater(() -> {
-            new Interfejs();
+            Interfejs interfejs = new Interfejs();
+            interfejs.setVisible(true);
         });
     }
 }
